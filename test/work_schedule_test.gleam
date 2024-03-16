@@ -1,69 +1,17 @@
 import work_schedule/internal/dao
+import work_schedule/internal/schedule
+import utils.{
+  create_table, insert_data, query_data, query_dynamic_data, setup_test_db,
+}
 import gleeunit
 import gleeunit/should
 import gleam/result
-import gleam/dynamic.{dynamic}
 import gleam/list
-import sqlight
-
-fn setup_test_db(f: fn(sqlight.Connection) -> _) -> Nil {
-  use conn <- sqlight.with_connection(":memory:")
-  f(conn)
-
-  Nil
-}
-
-fn create_table(conn: sqlight.Connection) -> Nil {
-  let sql =
-    "CREATE TABLE work_schedules (
-    date TEXT PRIMARY KEY CHECK (date LIKE '____-__-__'),
-    start_hour INT DEFAULT 0 CHECK (start_hour BETWEEN 0 AND 24),
-    end_hour INT DEFAULT 0 CHECK (end_hour BETWEEN 0 AND 24)
-    );
-  "
-
-  let assert Ok(_) = sqlight.exec(sql, conn)
-  Nil
-}
-
-fn insert_data(conn, date: String, start_hour: Int, end_hour: Int) -> Nil {
-  let sql =
-    "INSERT INTO work_schedules (date, start_hour, end_hour) VALUES (?, ?, ?)"
-
-  query_dynamic_data(
-    sql,
-    [sqlight.text(date), sqlight.int(start_hour), sqlight.int(end_hour)],
-    conn,
-  )
-
-  Nil
-}
-
-fn query_dynamic_data(
-  sql: String,
-  data: List(sqlight.Value),
-  conn: sqlight.Connection,
-) {
-  let assert Ok(result) = sqlight.query(sql, conn, data, dynamic)
-  result
-}
-
-fn query_data(sql: String, data: List(sqlight.Value), conn: sqlight.Connection) {
-  let assert Ok(result) =
-    sqlight.query(
-      sql,
-      conn,
-      data,
-      dynamic.tuple3(dynamic.string, dynamic.int, dynamic.int),
-    )
-  result
-}
 
 pub fn main() {
   gleeunit.main()
 }
 
-// gleeunit test functions end in `_test`
 pub fn database_setup_and_decoder_test() {
   let expected = #("2021-01-01", 8, 16)
   use conn <- setup_test_db()
@@ -101,4 +49,26 @@ pub fn save__record_exists__updates_existing_record__test() {
 
   query_data("SELECT * FROM work_schedules", [], conn)
   |> list.each(should.equal(_, expected))
+}
+
+pub fn get__no_record_exists__returns_empty_list__test() {
+  use conn <- setup_test_db()
+  create_table(conn)
+
+  let assert Ok(result) = dao.get(conn, "")
+
+  result
+  |> should.equal([])
+}
+
+pub fn get__records_exists__returns_them__test() {
+  let expected = [#("2021-01-01", 8, 16), #("2021-01-02", 8, 16)]
+  use conn <- setup_test_db()
+  create_table(conn)
+  list.each(expected, fn(item) { insert_data(conn, item.0, item.1, item.2) })
+
+  let assert Ok(result) = dao.get(conn, "2021-01%")
+
+  result
+  |> should.equal(list.map(expected, schedule.from_tuple))
 }

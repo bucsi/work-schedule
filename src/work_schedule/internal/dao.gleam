@@ -8,6 +8,25 @@ type DaoError {
   NoResult
 }
 
+pub fn get(
+  conn: sqlight.Connection,
+  date: String,
+) -> Result(List(schedule.Record), sqlight.Error) {
+  let sql =
+    "select *
+    from work_schedules
+    where date like ?;
+  "
+
+  sqlight.query(
+    sql,
+    on: conn,
+    with: [sqlight.text(date)],
+    expecting: get_row_decoder(),
+  )
+  |> result.map(schedule.from_list_of_tuple)
+}
+
 pub fn save(
   conn: sqlight.Connection,
   date: String,
