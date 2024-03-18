@@ -1,20 +1,14 @@
 # work_schedule
+## Problem description
+A worker has flexible scheduling at their workplace: every week, they request their off days and preferred time slots, then they get their approved schedule. A day's work can start and end at any time during the day. The worker wants to store their schedule in a program.
 
-[![Package Version](https://img.shields.io/hexpm/v/work_schedule)](https://hex.pm/packages/work_schedule)
-[![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/work_schedule/)
-
-```sh
-gleam add work_schedule
-```
-```gleam
-import work_schedule
-
-pub fn main() {
-  // TODO: An example of the project in use
-}
-```
-
-Further documentation can be found at <https://hexdocs.pm/work_schedule>.
+## Solution steps
+- [x] SQLite table with `date`, `start_hour` and `end_hour` values
+- [x] CRUD-like methods to update the DB
+  - [x] one method to create/update
+  - [x] one method to get a stored value
+- [ ] API endpoints (with `wisp`)
+- [ ] Frontend (`js` or `lustre`) 
 
 ## Development
 
