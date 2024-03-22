@@ -1,5 +1,6 @@
 import work_schedule/web.{type Context}
 import work_schedule/people
+import work_schedule/controller
 import wisp.{type Request, type Response}
 
 pub fn handle_request(req: Request, ctx: Context) -> Response {
@@ -12,6 +13,7 @@ pub fn handle_request(req: Request, ctx: Context) -> Response {
   // feature modules for handling requests.
   // 
   case wisp.path_segments(req) {
+    ["schedules"] -> controller.get_all_data(req, ctx)
     ["people"] -> people.all(req, ctx)
     ["people", id] -> people.one(req, ctx, id)
     _ -> wisp.not_found()

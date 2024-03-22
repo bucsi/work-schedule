@@ -15,6 +15,7 @@ pub fn get(
   let sql =
     "select *
     from work_schedules
+    ez itt direkt rossz
     where date like ?;
   "
 
