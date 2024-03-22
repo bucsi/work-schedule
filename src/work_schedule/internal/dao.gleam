@@ -10,19 +10,37 @@ type DaoError {
 
 pub fn get(
   conn: sqlight.Connection,
-  date: String,
+  like_date: String,
 ) -> Result(List(schedule.Record), sqlight.Error) {
   let sql =
     "select *
     from work_schedules
-    ez itt direkt rossz
     where date like ?;
   "
 
   sqlight.query(
     sql,
     on: conn,
-    with: [sqlight.text(date)],
+    with: [sqlight.text(like_date)],
+    expecting: get_row_decoder(),
+  )
+  |> result.map(schedule.from_list_of_tuple)
+}
+
+pub fn get_between(
+  conn: sqlight.Connection,
+  after_date: String,
+  before_date: String,
+) -> Result(List(schedule.Record), sqlight.Error) {
+  let sql =
+    "select *
+    from work_schedules
+    where ? <= date and date <= ?;
+  "
+  sqlight.query(
+    sql,
+    on: conn,
+    with: [sqlight.text(after_date), sqlight.text(before_date)],
     expecting: get_row_decoder(),
   )
   |> result.map(schedule.from_list_of_tuple)
