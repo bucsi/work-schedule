@@ -3,14 +3,9 @@ import work_schedule/internal/schedule
 import test_utils.{
   create_table, insert_data, query_data, query_dynamic_data, setup_test_db,
 }
-import gleeunit
 import gleeunit/should
 import gleam/result
 import gleam/list
-
-pub fn main() {
-  gleeunit.main()
-}
 
 pub fn database_setup_and_decoder_test() {
   let expected = #("2021-01-01", 8, 16)
