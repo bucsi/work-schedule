@@ -1,10 +1,10 @@
 import wisp.{type Request, type Response}
-import sqlight
 import gleam/json.{type Json}
 import gleam/string
+import work_schedule/internal/dao
 
 pub type Context {
-  Context(db: sqlight.Connection)
+  Context(dao: dao.Dao)
 }
 
 pub fn middleware(

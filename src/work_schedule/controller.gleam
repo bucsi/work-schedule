@@ -29,7 +29,7 @@ pub fn list(req: Request, ctx: Context) -> Response {
     use from_date <- try(query_param(query_params, "from"))
     use to_date <- try(query_param(query_params, "to"))
 
-    case dao.get_between(ctx.db, from_date, to_date) {
+    case ctx.dao.get_between(from_date, to_date) {
       Ok(schedules) -> {
         Ok(json.array(schedules, schedule.to_json))
       }

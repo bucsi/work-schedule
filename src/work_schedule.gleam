@@ -4,6 +4,7 @@ import wisp
 import sqlight
 import work_schedule/router
 import work_schedule/web
+import work_schedule/internal/dao
 
 pub const data_directory = "tmp/data"
 
@@ -14,7 +15,7 @@ pub fn main() {
   use conn <- sqlight.with_connection("file:work_schedule.sqlite")
 
   // A context is constructed to hold the database connection.
-  let context = web.Context(db: conn)
+  let context = web.Context(dao.new(conn))
 
   // The handle_request function is partially applied with the context to make
   // the request handler function that only takes a request.

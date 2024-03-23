@@ -8,6 +8,19 @@ pub type Err {
   NoResult
 }
 
+pub type Dao {
+  Dao(
+    get_between: fn(String, String) -> Result(List(schedule.Record), Err),
+    save: fn(String, Int, Int) -> Result(schedule.Record, sqlight.Error),
+  )
+}
+
+pub fn new(db: sqlight.Connection) -> Dao {
+  Dao(fn(from, to) { get_between(db, from, to) }, fn(date, start, end) {
+    save(db, date, start, end)
+  })
+}
+
 pub fn get(
   conn: sqlight.Connection,
   like_date: String,
