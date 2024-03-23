@@ -1,21 +1,23 @@
 import work_schedule/web.{type Context}
-import work_schedule/people
 import work_schedule/controller
+import gleam/http.{Get}
 import wisp.{type Request, type Response}
+
+pub fn get_request(
+  req: Request,
+  ctx: Context,
+  f: fn(Request, Context) -> Response,
+) -> wisp.Response {
+  case req.method {
+    Get -> f(req, ctx)
+    _ -> wisp.method_not_allowed([Get])
+  }
+}
 
 pub fn handle_request(req: Request, ctx: Context) -> Response {
   use req <- web.middleware(req)
-
-  // A new `work_schedule/web/people` module now contains the handlers and other functions
-  // relating to the People feature of the application.
-  //
-  // The router module now only deals with routing, and dispatches to the
-  // feature modules for handling requests.
-  // 
   case wisp.path_segments(req) {
-    ["schedules"] -> controller.get_all_data(req, ctx)
-    ["people"] -> people.all(req, ctx)
-    ["people", id] -> people.one(req, ctx, id)
+    ["list"] -> get_request(req, ctx, controller.list)
     _ -> wisp.not_found()
   }
 }
