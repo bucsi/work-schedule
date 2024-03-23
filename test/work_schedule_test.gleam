@@ -1,6 +1,6 @@
 import work_schedule/internal/dao
 import work_schedule/internal/schedule
-import utils.{
+import test_utils.{
   create_table, insert_data, query_data, query_dynamic_data, setup_test_db,
 }
 import gleeunit
@@ -68,6 +68,21 @@ pub fn get__records_exists__returns_them__test() {
   list.each(expected, fn(item) { insert_data(conn, item.0, item.1, item.2) })
 
   let assert Ok(result) = dao.get(conn, "2021-01%")
+
+  result
+  |> should.equal(list.map(expected, schedule.from_tuple))
+}
+
+pub fn get_between__records_exists__returns_them__test() {
+  let expected = [#("2021-01-01", 8, 16), #("2021-01-02", 8, 16)]
+  let not_expected = [#("2021-02-02", 8, 16), #("2021-02-03", 8, 16)]
+  use conn <- setup_test_db()
+  create_table(conn)
+  list.each(list.append(expected, not_expected), fn(item) {
+    insert_data(conn, item.0, item.1, item.2)
+  })
+
+  let assert Ok(result) = dao.get_between(conn, "2021-01-01", "2021-02-01")
 
   result
   |> should.equal(list.map(expected, schedule.from_tuple))

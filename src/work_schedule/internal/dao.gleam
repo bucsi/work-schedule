@@ -3,14 +3,14 @@ import gleam/dynamic
 import gleam/result
 import sqlight
 
-type DaoError {
-  DatabaseError(sqlight.Error)
+pub type Err {
+  DBError(sqlight.Error)
   NoResult
 }
 
 pub fn get(
   conn: sqlight.Connection,
-  date: String,
+  like_date: String,
 ) -> Result(List(schedule.Record), sqlight.Error) {
   let sql =
     "select *
@@ -21,10 +21,30 @@ pub fn get(
   sqlight.query(
     sql,
     on: conn,
-    with: [sqlight.text(date)],
+    with: [sqlight.text(like_date)],
     expecting: get_row_decoder(),
   )
   |> result.map(schedule.from_list_of_tuple)
+}
+
+pub fn get_between(
+  conn: sqlight.Connection,
+  after_date: String,
+  before_date: String,
+) -> Result(List(schedule.Record), Err) {
+  let sql =
+    "select *
+    from work_schedules
+    where ? <= date and date <= ?;
+  "
+  sqlight.query(
+    sql,
+    on: conn,
+    with: [sqlight.text(after_date), sqlight.text(before_date)],
+    expecting: get_row_decoder(),
+  )
+  |> result.map(schedule.from_list_of_tuple)
+  |> result.map_error(fn(e) { DBError(e) })
 }
 
 pub fn save(
@@ -36,7 +56,7 @@ pub fn save(
   case get_one_row(conn, date) {
     Ok(_) -> update(conn, date, from, to)
     Error(NoResult) -> insert(conn, date, from, to)
-    Error(DatabaseError(e)) -> Error(e)
+    Error(DBError(e)) -> Error(e)
   }
 }
 
@@ -76,7 +96,7 @@ pub fn get_row_decoder() {
 fn get_one_row(
   conn: sqlight.Connection,
   key: String,
-) -> Result(schedule.Record, DaoError) {
+) -> Result(schedule.Record, Err) {
   let sql =
     "select *
     from work_schedules
@@ -92,7 +112,7 @@ fn get_one_row(
 
   case query_result {
     Ok([]) -> Error(NoResult)
-    Error(e) -> Error(DatabaseError(e))
+    Error(e) -> Error(DBError(e))
     Ok(result) -> {
       let assert [res] = result
       Ok(schedule.from_tuple(res))
