@@ -11,6 +11,7 @@ fn mock_dao() -> dao.Dao {
   dao.Dao(
     get_between: fn(_a, _b) { Ok([schedule.Day("asdd", 1, 2)]) },
     save: fn(_a, _b, _c) { Ok(schedule.Day("asdd", 1, 2)) },
+    get_all: fn() { Ok([schedule.Day("asdd", 1, 2)]) },
   )
 }
 
@@ -19,6 +20,7 @@ fn mock_bad_dao() -> dao.Dao {
   dao.Dao(
     get_between: fn(_a, _b) { Error(dao.DBError(err)) },
     save: fn(_a, _b, _c) { Error(err) },
+    get_all: fn() { Error(err) },
   )
 }
 
@@ -81,4 +83,30 @@ pub fn list__db_error__retuns_internal_server_error__test() {
   response
   |> testing.string_body
   |> birdie.snap("API tests / list / internal server error, no response")
+}
+
+pub fn schedule__db_error__retuns_internal_server_error__test() {
+  use ctx <- with_context(mock_bad_dao())
+  let request = testing.get("/schedule", [])
+  let response = router.handle_request(request, ctx)
+
+  response.status
+  |> should.equal(500)
+
+  response
+  |> testing.string_body
+  |> birdie.snap("API tests / all / internal server error, no response")
+}
+
+pub fn schedule__ok__retuns_results__test() {
+  use ctx <- with_context(mock_dao())
+  let request = testing.get("/schedule", [])
+  let response = router.handle_request(request, ctx)
+
+  response.status
+  |> should.equal(200)
+
+  response
+  |> testing.string_body
+  |> birdie.snap("API tests / all / OK")
 }

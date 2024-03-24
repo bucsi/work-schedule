@@ -12,13 +12,16 @@ pub type Dao {
   Dao(
     get_between: fn(String, String) -> Result(List(schedule.Record), Err),
     save: fn(String, Int, Int) -> Result(schedule.Record, sqlight.Error),
+    get_all: fn() -> Result(List(schedule.Record), sqlight.Error),
   )
 }
 
 pub fn new(db: sqlight.Connection) -> Dao {
-  Dao(fn(from, to) { get_between(db, from, to) }, fn(date, start, end) {
-    save(db, date, start, end)
-  })
+  Dao(
+    fn(from, to) { get_between(db, from, to) },
+    fn(date, start, end) { save(db, date, start, end) },
+    fn() { get(db, "%") },
+  )
 }
 
 pub fn get(

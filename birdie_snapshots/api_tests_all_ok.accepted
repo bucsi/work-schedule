@@ -1,0 +1,7 @@
+---
+version: 1.1.0
+title: API tests / all / OK
+file: ./test/api.gleam
+test_name: schedule__ok__retuns_results__test
+---
+{"success":true,"data":[{"date":"asdd","from":1,"to":2}]}

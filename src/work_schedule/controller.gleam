@@ -22,6 +22,16 @@ fn query_param(params, key) -> Result(String, Err) {
   Ok(item.1)
 }
 
+pub fn all(_req: Request, ctx: Context) -> Response {
+  case ctx.dao.get_all() {
+    Ok(schedules) -> {
+      let json = json.array(schedules, schedule.to_json)
+      web.respond_with_success(json)
+    }
+    Error(err) -> web.respond_with_internal_error(err)
+  }
+}
+
 pub fn list(req: Request, ctx: Context) -> Response {
   let query_params = wisp.get_query(req)
 

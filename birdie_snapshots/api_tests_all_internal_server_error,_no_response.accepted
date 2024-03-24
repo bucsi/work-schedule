@@ -1,0 +1,6 @@
+---
+version: 1.1.0
+title: API tests / all / internal server error, no response
+file: ./test/api.gleam
+test_name: schedule__db_error__retuns_internal_server_error__test
+---
