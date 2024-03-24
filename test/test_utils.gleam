@@ -1,7 +1,7 @@
 import gleam/dynamic.{dynamic}
 import sqlight
 
-pub fn setup_test_db(f: fn(sqlight.Connection) -> _) -> Nil {
+pub fn setup_test_db(f: fn(sqlight.Connection) -> Nil) -> Nil {
   sqlight.with_connection(":memory:", f)
 }
 

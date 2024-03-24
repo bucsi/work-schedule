@@ -1,15 +1,11 @@
 import work_schedule/router
 import work_schedule/web.{type Context, Context}
-import gleeunit
+import birdie
 import gleeunit/should
 import wisp/testing
 import work_schedule/internal/dao
 import work_schedule/internal/schedule
 import sqlight
-
-pub fn main() {
-  gleeunit.main()
-}
 
 fn mock_dao() -> dao.Dao {
   dao.Dao(
@@ -41,8 +37,8 @@ pub fn list__no__from_queryparam__retuns_err__test() {
 
   response
   |> testing.string_body
-  |> should.equal(
-    "{\"success\":false,\"data\":{\"error\":\"MissingQueryString(\\\"from\\\")\",\"message\":\"Client error\"}}",
+  |> birdie.snap(
+    "API tests / list / client error / Missing query parameter `from`",
   )
 }
 
@@ -56,8 +52,8 @@ pub fn list__no__to_queryparam__retuns_err__test() {
 
   response
   |> testing.string_body
-  |> should.equal(
-    "{\"success\":false,\"data\":{\"error\":\"MissingQueryString(\\\"to\\\")\",\"message\":\"Client error\"}}",
+  |> birdie.snap(
+    "API tests / list / client error / Missing query parameter `to`",
   )
 }
 
@@ -71,9 +67,7 @@ pub fn list__query_ok__retuns_ddb_result__test() {
 
   response
   |> testing.string_body
-  |> should.equal(
-    "{\"success\":true,\"data\":[{\"date\":\"asdd\",\"from\":1,\"to\":2}]}",
-  )
+  |> birdie.snap("API tests / list / OK")
 }
 
 pub fn list__db_error__retuns_internal_server_error__test() {
@@ -86,5 +80,5 @@ pub fn list__db_error__retuns_internal_server_error__test() {
 
   response
   |> testing.string_body
-  |> should.equal("")
+  |> birdie.snap("API tests / list / internal server error, no response")
 }

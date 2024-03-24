@@ -1,0 +1,7 @@
+---
+version: 1.1.0
+title: API tests / list / client error / Missing query parameter `to`
+file: ./test/api.gleam
+test_name: list__no__to_queryparam__retuns_err__test
+---
+{"success":false,"data":{"error":"MissingQueryString(\"to\")","message":"Client error"}}

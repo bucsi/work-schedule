@@ -1,0 +1,7 @@
+---
+version: 1.1.0
+title: API tests / list / OK
+file: ./test/api.gleam
+test_name: list__query_ok__retuns_ddb_result__test
+---
+{"success":true,"data":[{"date":"asdd","from":1,"to":2}]}
