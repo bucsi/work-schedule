@@ -29,7 +29,7 @@ fn with_context(dao_mock: dao.Dao, testcase: fn(Context) -> t) -> t {
 
 pub fn list__no__from_queryparam__retuns_err__test() {
   use ctx <- with_context(mock_dao())
-  let request = testing.get("/list?to=irrelevant", [])
+  let request = testing.get("/schedule/list?to=irrelevant", [])
   let response = router.handle_request(request, ctx)
 
   response.status
@@ -44,7 +44,7 @@ pub fn list__no__from_queryparam__retuns_err__test() {
 
 pub fn list__no__to_queryparam__retuns_err__test() {
   use ctx <- with_context(mock_dao())
-  let request = testing.get("/list?from=irrelevant", [])
+  let request = testing.get("/schedule/list?from=irrelevant", [])
   let response = router.handle_request(request, ctx)
 
   response.status
@@ -59,7 +59,7 @@ pub fn list__no__to_queryparam__retuns_err__test() {
 
 pub fn list__query_ok__retuns_ddb_result__test() {
   use ctx <- with_context(mock_dao())
-  let request = testing.get("/list?from=irrelevant&to=irrelevant", [])
+  let request = testing.get("/schedule/list?from=irrelevant&to=irrelevant", [])
   let response = router.handle_request(request, ctx)
 
   response.status
@@ -72,7 +72,7 @@ pub fn list__query_ok__retuns_ddb_result__test() {
 
 pub fn list__db_error__retuns_internal_server_error__test() {
   use ctx <- with_context(mock_bad_dao())
-  let request = testing.get("/list?from=irrelevant&to=irrelevant", [])
+  let request = testing.get("/schedule/list?from=irrelevant&to=irrelevant", [])
   let response = router.handle_request(request, ctx)
 
   response.status

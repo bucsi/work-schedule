@@ -17,7 +17,7 @@ pub fn get_request(
 pub fn handle_request(req: Request, ctx: Context) -> Response {
   use req <- web.middleware(req)
   case wisp.path_segments(req) {
-    ["list"] -> get_request(req, ctx, controller.list)
+    ["schedule", "list"] -> get_request(req, ctx, controller.list)
     _ -> wisp.not_found()
   }
 }
